@@ -3,6 +3,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Memory Player Premium</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; }
     :root {
@@ -17,7 +20,7 @@
     html, body {
       margin: 0;
       min-height: 100%;
-      font-family: Arial, sans-serif;
+      font-family: 'Inter', Arial, sans-serif;
       background: radial-gradient(circle at top, rgba(255,255,255,0.08), transparent 30%), linear-gradient(180deg, var(--bg-1), var(--bg-2));
       color: var(--text);
       overflow: hidden;
@@ -110,8 +113,9 @@
       background: rgba(255,255,255,0.1);
       border: 1px solid rgba(255,255,255,0.12);
       font-size: 12px;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
+      font-weight: 700;
     }
     .live-dot {
       width: 8px;
@@ -135,19 +139,22 @@
       border-radius: 16px;
       font-weight: 700;
       cursor: pointer;
+      font-family: 'Inter', Arial, sans-serif;
     }
     .headline-wrap { margin-bottom: 12px; }
     h1 {
       margin: 0;
-      font-size: 34px;
-      line-height: 1.06;
-      letter-spacing: -0.02em;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 40px;
+      line-height: 0.98;
+      letter-spacing: -0.03em;
       text-shadow: 0 8px 30px rgba(0,0,0,0.35);
+      font-weight: 700;
     }
     .subtitle {
-      margin: 8px 0 0;
+      margin: 10px 0 0;
       color: var(--muted);
-      line-height: 1.5;
+      line-height: 1.6;
       font-size: 15px;
       text-shadow: 0 4px 20px rgba(0,0,0,0.28);
     }
@@ -174,24 +181,27 @@
     }
     .message-label {
       font-size: 11px;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
       color: rgba(255,255,255,0.58);
       margin-bottom: 8px;
       position: relative;
       z-index: 1;
+      font-weight: 700;
     }
     .message {
       margin: 0;
-      font-size: 20px;
+      font-size: 22px;
       line-height: 1.5;
       color: #fff;
       position: relative;
       z-index: 1;
-      min-height: 60px;
+      min-height: 66px;
       opacity: 0;
       transform: translateY(10px);
       transition: opacity 0.5s ease, transform 0.5s ease;
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 600;
     }
     .message.show {
       opacity: 1;
@@ -220,13 +230,14 @@
     }
     .meta-label {
       font-size: 11px;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
       color: rgba(255,255,255,0.58);
       margin-bottom: 6px;
+      font-weight: 700;
     }
     .meta-value {
-      font-size: 15px;
+      font-size: 16px;
       font-weight: 700;
       line-height: 1.4;
       word-break: break-word;
@@ -248,6 +259,7 @@
       text-decoration: none;
       text-align: center;
       transition: transform 0.18s ease, opacity 0.18s ease, background 0.18s ease;
+      font-family: 'Inter', Arial, sans-serif;
     }
     button:active, a.button-link:active { transform: scale(0.98); }
     .primary { background: #fff; color: #000; }
@@ -287,23 +299,26 @@
     }
     .overlay-card, .ending-card {
       width: 100%;
-      max-width: 420px;
+      max-width: 440px;
       background: rgba(255,255,255,0.09);
       border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 28px;
-      padding: 26px 22px;
+      border-radius: 32px;
+      padding: 30px 24px;
       box-shadow: 0 24px 80px rgba(0,0,0,0.45);
     }
     .overlay-title, .ending-title {
-      font-size: 30px;
-      line-height: 1.08;
-      margin: 0 0 10px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 44px;
+      line-height: 0.95;
+      margin: 0 0 14px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
     }
     .overlay-text, .ending-text, .intro-text {
       color: rgba(255,255,255,0.82);
-      line-height: 1.6;
+      line-height: 1.7;
       font-size: 16px;
-      margin: 0 0 18px;
+      margin: 0 0 20px;
     }
     .unlock-btn, .replay-btn {
       background: #fff;
@@ -312,40 +327,62 @@
       border-radius: 18px;
       padding: 16px 18px;
       font-size: 16px;
-      font-weight: 700;
+      font-weight: 800;
       width: 100%;
       cursor: pointer;
+      font-family: 'Inter', Arial, sans-serif;
     }
     .intro {
       z-index: 11;
-      background: rgba(0,0,0,0.68);
+      background: linear-gradient(180deg, rgba(0,0,0,0.78), rgba(0,0,0,0.62));
       flex-direction: column;
-      gap: 14px;
+      gap: 18px;
+      padding: 32px;
     }
     .intro-line {
-      font-size: 18px;
-      letter-spacing: 0.04em;
       opacity: 0;
-      transform: translateY(14px);
-      transition: opacity 0.6s ease, transform 0.6s ease;
+      transform: translateY(20px) scale(0.98);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+      text-shadow: 0 12px 40px rgba(0,0,0,0.45);
     }
     .intro-line.show {
       opacity: 1;
-      transform: translateY(0);
+      transform: translateY(0) scale(1);
+    }
+    .intro-line.small {
+      font-size: 22px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: rgba(255,255,255,0.82);
     }
     .intro-line.primary {
-      font-size: 30px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 68px;
+      line-height: 0.92;
       font-weight: 700;
+      letter-spacing: -0.04em;
+      max-width: 760px;
+    }
+    .intro-line.secondary {
+      font-size: 28px;
+      line-height: 1.3;
+      font-weight: 600;
+      color: rgba(255,255,255,0.9);
+      max-width: 640px;
     }
     @media (max-width: 560px) {
       .shell { align-items: flex-end; padding: 16px 12px 20px; }
       .card { padding: 15px; border-radius: 26px; }
-      h1, .overlay-title, .ending-title { font-size: 28px; }
-      .message { font-size: 18px; }
+      h1 { font-size: 34px; }
+      .overlay-title, .ending-title { font-size: 36px; }
+      .message { font-size: 20px; }
       .controls, .meta-grid { grid-template-columns: 1fr; }
       .top-row { align-items: stretch; }
       .fullscreen-btn { padding: 10px 12px; }
-      .intro-line.primary { font-size: 26px; }
+      .intro-line.small { font-size: 16px; }
+      .intro-line.primary { font-size: 46px; }
+      .intro-line.secondary { font-size: 22px; }
     }
   </style>
 </head>
@@ -358,13 +395,13 @@
   </div>  <div class="hearts" id="hearts"></div>  <div class="overlay" id="unlockOverlay">
     <div class="overlay-card">
       <h2 class="overlay-title">A memory was saved for you</h2>
-      <p class="overlay-text">Tap below to unlock the moment, reveal the message, and start the memory.</p>
+      <p class="overlay-text">Tap below to unlock the moment, reveal the message, and begin the memory.</p>
       <button class="unlock-btn" id="unlockBtn">Tap to Open</button>
     </div>
   </div>  <div class="intro hidden" id="introOverlay">
-    <div class="intro-line" id="introLine1">For someone special...</div>
+    <div class="intro-line small" id="introLine1">For someone special</div>
     <div class="intro-line primary" id="introLine2">A memory made just for you</div>
-    <div class="intro-line" id="introLine3">From someone who admires you the most</div>
+    <div class="intro-line secondary" id="introLine3">From someone who admires you the most</div>
   </div>  <div class="ending hidden" id="endingOverlay">
     <div class="ending-card">
       <h2 class="ending-title">This memory was saved for you ❤</h2>
@@ -398,7 +435,7 @@
   </div>
 
   <div class="controls">
-    <button class="primary" id="soundBtn">Tap for Sound</button>
+    <button class="primary" id="soundBtn">Sound On</button>
     <button class="secondary" id="restartBtn">Restart Video</button>
     <a class="button-link secondary hidden" id="fallbackLink" href="#" target="_blank" rel="noopener noreferrer">Open Video Directly</a>
   </div>
@@ -456,10 +493,15 @@
     let currentData = { ...defaultData };
     let heartsInterval = null;
     let introTimeouts = [];
+    let messageTimeout = null;
 
     function clearIntroTimeouts() {
       introTimeouts.forEach(timeout => clearTimeout(timeout));
       introTimeouts = [];
+      if (messageTimeout) {
+        clearTimeout(messageTimeout);
+        messageTimeout = null;
+      }
     }
 
     function typeMessage(text, speed = 42) {
@@ -534,7 +576,7 @@
       subtitleEl.textContent = currentData.subtitle || 'Tap below to hear the music and watch the memory video.';
       recipientEl.textContent = currentData.recipient || 'Someone Special';
       senderEl.textContent = currentData.sender || 'someone who admires you the most';
-      introLine1.textContent = `For ${currentData.recipient || 'someone special'}...`;
+      introLine1.textContent = `For ${currentData.recipient || 'someone special'}`;
       introLine2.textContent = currentData.title || 'A memory made just for you';
       introLine3.textContent = `From ${currentData.sender || 'someone who admires you the most'}`;
       fallbackLink.href = currentData.video || defaultData.video;
@@ -598,25 +640,39 @@
       clearIntroTimeouts();
       introOverlay.classList.remove('hidden');
       [introLine1, introLine2, introLine3].forEach(line => line.classList.remove('show'));
-
-      introTimeouts.push(setTimeout(() => introLine1.classList.add('show'), 200));
-      introTimeouts.push(setTimeout(() => introLine2.classList.add('show'), 1000));
-      introTimeouts.push(setTimeout(() => introLine3.classList.add('show'), 1900));
-      introTimeouts.push(setTimeout(() => introOverlay.classList.add('hidden'), 3400));
-      introTimeouts.push(setTimeout(() => typeMessage(currentData.message || defaultData.message), 3700));
+      introTimeouts.push(setTimeout(() => introLine1.classList.add('show'), 180));
+      introTimeouts.push(setTimeout(() => introLine2.classList.add('show'), 900));
+      introTimeouts.push(setTimeout(() => introLine3.classList.add('show'), 1800));
+      introTimeouts.push(setTimeout(() => introOverlay.classList.add('hidden'), 3800));
+      messageTimeout = setTimeout(() => typeMessage(currentData.message || defaultData.message), 4100);
     }
 
     async function startExperience() {
       unlockOverlay.classList.add('hidden');
       endingOverlay.classList.add('hidden');
       document.body.classList.add('playing');
+      player.muted = false;
+      player.volume = 0;
       runIntroSequence();
       startHearts();
       try {
         player.currentTime = 0;
         await player.play();
+        let volume = 0;
+        const fade = setInterval(() => {
+          volume += 0.1;
+          if (volume >= 1) {
+            player.volume = 1;
+            clearInterval(fade);
+          } else {
+            player.volume = volume;
+          }
+        }, 120);
+        soundBtn.textContent = 'Sound On';
       } catch (error) {
+        player.muted = true;
         fallbackLink.classList.remove('hidden');
+        soundBtn.textContent = 'Tap Video Controls';
       }
     }
 
