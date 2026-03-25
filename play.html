@@ -20,7 +20,7 @@
       font-family: Arial, sans-serif;
       background: radial-gradient(circle at top, rgba(255,255,255,0.08), transparent 30%), linear-gradient(180deg, var(--bg-1), var(--bg-2));
       color: var(--text);
-      overflow-x: hidden;
+      overflow: hidden;
     }
     body { position: relative; }
     .bg-video-wrap {
@@ -29,6 +29,13 @@
       overflow: hidden;
       z-index: 0;
       background: #000;
+      filter: blur(10px) brightness(0.72);
+      transform: scale(1.06);
+      transition: filter 0.8s ease, transform 0.8s ease;
+    }
+    body.playing .bg-video-wrap {
+      filter: blur(0) brightness(0.95);
+      transform: scale(1);
     }
     .bg-video-wrap::after {
       content: "";
@@ -85,6 +92,7 @@
       border-radius: 30px;
       padding: 18px;
       box-shadow: var(--shadow);
+      transition: opacity 0.5s ease, transform 0.5s ease;
     }
     .top-row {
       display: flex;
@@ -181,6 +189,13 @@
       position: relative;
       z-index: 1;
       min-height: 60px;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .message.show {
+      opacity: 1;
+      transform: translateY(0);
     }
     .cursor {
       display: inline-block;
@@ -249,14 +264,88 @@
       line-height: 1.5;
     }
     .hidden { display: none; }
+    .overlay, .intro, .ending {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
+    }
+    .overlay, .ending {
+      background: rgba(0,0,0,0.72);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+    .overlay.hidden, .intro.hidden, .ending.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .overlay-card, .ending-card {
+      width: 100%;
+      max-width: 420px;
+      background: rgba(255,255,255,0.09);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 28px;
+      padding: 26px 22px;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.45);
+    }
+    .overlay-title, .ending-title {
+      font-size: 30px;
+      line-height: 1.08;
+      margin: 0 0 10px;
+    }
+    .overlay-text, .ending-text, .intro-text {
+      color: rgba(255,255,255,0.82);
+      line-height: 1.6;
+      font-size: 16px;
+      margin: 0 0 18px;
+    }
+    .unlock-btn, .replay-btn {
+      background: #fff;
+      color: #000;
+      border: 0;
+      border-radius: 18px;
+      padding: 16px 18px;
+      font-size: 16px;
+      font-weight: 700;
+      width: 100%;
+      cursor: pointer;
+    }
+    .intro {
+      z-index: 11;
+      background: rgba(0,0,0,0.68);
+      flex-direction: column;
+      gap: 14px;
+    }
+    .intro-line {
+      font-size: 18px;
+      letter-spacing: 0.04em;
+      opacity: 0;
+      transform: translateY(14px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .intro-line.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .intro-line.primary {
+      font-size: 30px;
+      font-weight: 700;
+    }
     @media (max-width: 560px) {
       .shell { align-items: flex-end; padding: 16px 12px 20px; }
       .card { padding: 15px; border-radius: 26px; }
-      h1 { font-size: 28px; }
+      h1, .overlay-title, .ending-title { font-size: 28px; }
       .message { font-size: 18px; }
       .controls, .meta-grid { grid-template-columns: 1fr; }
       .top-row { align-items: stretch; }
       .fullscreen-btn { padding: 10px 12px; }
+      .intro-line.primary { font-size: 26px; }
     }
   </style>
 </head>
@@ -266,7 +355,23 @@
       <source id="videoSource" src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4" />
       Your browser does not support the video tag.
     </video>
-  </div>  <div class="hearts" id="hearts"></div>  <div class="shell">
+  </div>  <div class="hearts" id="hearts"></div>  <div class="overlay" id="unlockOverlay">
+    <div class="overlay-card">
+      <h2 class="overlay-title">A memory was saved for you</h2>
+      <p class="overlay-text">Tap below to unlock the moment, reveal the message, and start the memory.</p>
+      <button class="unlock-btn" id="unlockBtn">Tap to Open</button>
+    </div>
+  </div>  <div class="intro hidden" id="introOverlay">
+    <div class="intro-line" id="introLine1">For someone special...</div>
+    <div class="intro-line primary" id="introLine2">A memory made just for you</div>
+    <div class="intro-line" id="introLine3">From someone who admires you the most</div>
+  </div>  <div class="ending hidden" id="endingOverlay">
+    <div class="ending-card">
+      <h2 class="ending-title">This memory was saved for you ❤</h2>
+      <p class="ending-text">Some moments deserve to be replayed again and again.</p>
+      <button class="replay-btn" id="replayBtn">Replay Memory</button>
+    </div>
+  </div>  <div class="shell">
     <div class="card">
       <div class="top-row">
         <div class="pill"><span class="live-dot"></span> Memory Player</div>
@@ -306,7 +411,6 @@
     const recordId = params.get('id');
     const rawVideoParam = params.get('video');
     const shortVideoParam = params.get('v');
-
     const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/11Vu5yzzu5XTD2MqVOX3u9yIFdsO-ZEj89qJPKTroUYk/export?format=csv&gid=0';
 
     let resolvedVideo = 'https://www.w3schools.com/html/mov_bbb.mp4';
@@ -340,14 +444,33 @@
     const fallbackLink = document.getElementById('fallbackLink');
     const fullscreenBtn = document.getElementById('fullscreenBtn');
     const hearts = document.getElementById('hearts');
+    const unlockOverlay = document.getElementById('unlockOverlay');
+    const unlockBtn = document.getElementById('unlockBtn');
+    const introOverlay = document.getElementById('introOverlay');
+    const introLine1 = document.getElementById('introLine1');
+    const introLine2 = document.getElementById('introLine2');
+    const introLine3 = document.getElementById('introLine3');
+    const endingOverlay = document.getElementById('endingOverlay');
+    const replayBtn = document.getElementById('replayBtn');
+
+    let currentData = { ...defaultData };
+    let heartsInterval = null;
+    let introTimeouts = [];
+
+    function clearIntroTimeouts() {
+      introTimeouts.forEach(timeout => clearTimeout(timeout));
+      introTimeouts = [];
+    }
 
     function typeMessage(text, speed = 42) {
+      messageEl.classList.remove('show');
       messageEl.innerHTML = '';
       let index = 0;
       const cursor = document.createElement('span');
       cursor.className = 'cursor';
       cursor.textContent = '|';
       messageEl.appendChild(cursor);
+      setTimeout(() => messageEl.classList.add('show'), 60);
       const timer = setInterval(() => {
         if (index < text.length) {
           cursor.insertAdjacentText('beforebegin', text.charAt(index));
@@ -406,18 +529,23 @@
     }
 
     function applyData(data) {
-      titleEl.textContent = data.title || 'Our Song';
-      subtitleEl.textContent = data.subtitle || 'Tap below to hear the music and watch the memory video.';
-      recipientEl.textContent = data.recipient || 'Someone Special';
-      senderEl.textContent = data.sender || 'someone who admires you the most';
-      fallbackLink.href = data.video || defaultData.video;
-      videoSource.src = data.video || defaultData.video;
+      currentData = { ...defaultData, ...data };
+      titleEl.textContent = currentData.title || 'Our Song';
+      subtitleEl.textContent = currentData.subtitle || 'Tap below to hear the music and watch the memory video.';
+      recipientEl.textContent = currentData.recipient || 'Someone Special';
+      senderEl.textContent = currentData.sender || 'someone who admires you the most';
+      introLine1.textContent = `For ${currentData.recipient || 'someone special'}...`;
+      introLine2.textContent = currentData.title || 'A memory made just for you';
+      introLine3.textContent = `From ${currentData.sender || 'someone who admires you the most'}`;
+      fallbackLink.href = currentData.video || defaultData.video;
+      videoSource.src = currentData.video || defaultData.video;
       player.load();
-      typeMessage(data.message || 'From: someone who admires you the most');
+      messageEl.textContent = '';
+      messageEl.classList.remove('show');
     }
 
     async function loadSheetRecord() {
-      if (!recordId || SHEET_CSV_URL.includes('REPLACE_WITH_PUBLISHED_CSV')) {
+      if (!recordId) {
         applyData(defaultData);
         return;
       }
@@ -455,17 +583,69 @@
       setTimeout(() => heart.remove(), 11000);
     }
 
+    function startHearts() {
+      if (heartsInterval) clearInterval(heartsInterval);
+      heartsInterval = setInterval(spawnHeart, 1200);
+      for (let i = 0; i < 6; i++) setTimeout(spawnHeart, i * 350);
+    }
+
+    function stopHearts() {
+      if (heartsInterval) clearInterval(heartsInterval);
+      heartsInterval = null;
+    }
+
+    function runIntroSequence() {
+      clearIntroTimeouts();
+      introOverlay.classList.remove('hidden');
+      [introLine1, introLine2, introLine3].forEach(line => line.classList.remove('show'));
+
+      introTimeouts.push(setTimeout(() => introLine1.classList.add('show'), 200));
+      introTimeouts.push(setTimeout(() => introLine2.classList.add('show'), 1000));
+      introTimeouts.push(setTimeout(() => introLine3.classList.add('show'), 1900));
+      introTimeouts.push(setTimeout(() => introOverlay.classList.add('hidden'), 3400));
+      introTimeouts.push(setTimeout(() => typeMessage(currentData.message || defaultData.message), 3700));
+    }
+
+    async function startExperience() {
+      unlockOverlay.classList.add('hidden');
+      endingOverlay.classList.add('hidden');
+      document.body.classList.add('playing');
+      runIntroSequence();
+      startHearts();
+      try {
+        player.currentTime = 0;
+        await player.play();
+      } catch (error) {
+        fallbackLink.classList.remove('hidden');
+      }
+    }
+
+    async function replayExperience() {
+      endingOverlay.classList.add('hidden');
+      await startExperience();
+    }
+
     applyData(defaultData);
     loadSheetRecord();
 
-    setInterval(spawnHeart, 1200);
-    for (let i = 0; i < 6; i++) setTimeout(spawnHeart, i * 350);
+    unlockBtn.addEventListener('click', startExperience);
+    replayBtn.addEventListener('click', replayExperience);
 
     soundBtn.addEventListener('click', async () => {
       try {
         player.muted = false;
-        player.volume = 1;
+        player.volume = 0;
         await player.play();
+        let volume = 0;
+        const fade = setInterval(() => {
+          volume += 0.1;
+          if (volume >= 1) {
+            player.volume = 1;
+            clearInterval(fade);
+          } else {
+            player.volume = volume;
+          }
+        }, 120);
         soundBtn.textContent = 'Sound On';
       } catch (error) {
         soundBtn.textContent = 'Tap Video Controls';
@@ -475,13 +655,7 @@
     });
 
     restartBtn.addEventListener('click', async () => {
-      player.currentTime = 0;
-      try {
-        await player.play();
-      } catch (error) {
-        fallbackLink.classList.remove('hidden');
-      }
-      typeMessage(messageEl.textContent || defaultData.message);
+      await replayExperience();
     });
 
     fullscreenBtn.addEventListener('click', async () => {
@@ -494,6 +668,11 @@
       } catch (error) {
         console.log('Fullscreen not supported on this device/browser.');
       }
+    });
+
+    player.addEventListener('ended', () => {
+      stopHearts();
+      endingOverlay.classList.remove('hidden');
     });
   </script></body>
 </html>
