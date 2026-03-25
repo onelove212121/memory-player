@@ -297,6 +297,7 @@ button:active, a.button-link:active {
     coverImageEl.src = data.cover;
     player.poster = data.cover;
     videoSource.src = data.video;
+    player.load();
     fallbackLink.href = data.video;
 
     player.load();
