@@ -4,333 +4,260 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Memory Player Premium</title>
   <style>
-    * { box-sizing: border-box; }:root {
-  --bg-1: #050505;
-  --bg-2: #0d0d0f;
-  --glass: rgba(255,255,255,0.08);
-  --glass-border: rgba(255,255,255,0.12);
-  --text: #ffffff;
-  --muted: rgba(255,255,255,0.76);
-  --soft: rgba(255,255,255,0.08);
-  --shadow: 0 24px 80px rgba(0,0,0,0.45);
-}
-
-html, body {
-  margin: 0;
-  min-height: 100%;
-  font-family: Arial, sans-serif;
-  background: radial-gradient(circle at top, rgba(255,255,255,0.08), transparent 30%), linear-gradient(180deg, var(--bg-1), var(--bg-2));
-  color: var(--text);
-  overflow-x: hidden;
-}
-
-body {
-  position: relative;
-}
-
-.bg-video-wrap {
-  position: fixed;
-  inset: 0;
-  overflow: hidden;
-  z-index: 0;
-  background: #000;
-}
-
-.bg-video-wrap::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(to bottom, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0.42) 45%, rgba(0,0,0,0.82) 100%),
-    radial-gradient(circle at center, transparent 10%, rgba(0,0,0,0.28) 70%, rgba(0,0,0,0.5) 100%);
-  pointer-events: none;
-}
-
-#player {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  background: #000;
-}
-
-.hearts {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  overflow: hidden;
-  z-index: 2;
-}
-
-.heart {
-  position: absolute;
-  bottom: -40px;
-  font-size: 18px;
-  opacity: 0;
-  animation: floatHeart linear forwards;
-  filter: drop-shadow(0 6px 16px rgba(255,255,255,0.22));
-}
-
-@keyframes floatHeart {
-  0% {
-    transform: translateY(0) translateX(0) scale(0.85) rotate(0deg);
-    opacity: 0;
-  }
-  10% {
-    opacity: 0.85;
-  }
-  100% {
-    transform: translateY(-115vh) translateX(var(--drift, 0px)) scale(1.25) rotate(20deg);
-    opacity: 0;
-  }
-}
-
-.shell {
-  position: relative;
-  z-index: 3;
-  min-height: 100vh;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  padding: 22px 16px 26px;
-}
-
-.card {
-  width: 100%;
-  max-width: 520px;
-  background: var(--glass);
-  border: 1px solid var(--glass-border);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border-radius: 30px;
-  padding: 18px;
-  box-shadow: var(--shadow);
-}
-
-.top-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 14px;
-}
-
-.pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 9px 14px;
-  border-radius: 999px;
-  background: rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.12);
-  font-size: 12px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.live-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 0 0 0 rgba(255,255,255,0.7);
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0% { box-shadow: 0 0 0 0 rgba(255,255,255,0.55); }
-  70% { box-shadow: 0 0 0 12px rgba(255,255,255,0); }
-  100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); }
-}
-
-.fullscreen-btn {
-  border: 0;
-  background: rgba(255,255,255,0.1);
-  color: #fff;
-  border: 1px solid rgba(255,255,255,0.12);
-  padding: 10px 14px;
-  border-radius: 16px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.headline-wrap {
-  margin-bottom: 12px;
-}
-
-h1 {
-  margin: 0;
-  font-size: 34px;
-  line-height: 1.06;
-  letter-spacing: -0.02em;
-  text-shadow: 0 8px 30px rgba(0,0,0,0.35);
-}
-
-.subtitle {
-  margin: 8px 0 0;
-  color: var(--muted);
-  line-height: 1.5;
-  font-size: 15px;
-  text-shadow: 0 4px 20px rgba(0,0,0,0.28);
-}
-
-.reveal-box {
-  margin: 16px 0 14px;
-  padding: 18px;
-  border-radius: 22px;
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.08);
-  position: relative;
-  overflow: hidden;
-}
-
-.reveal-box::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.08) 50%, transparent 100%);
-  transform: translateX(-120%);
-  animation: shimmer 4.6s infinite;
-}
-
-@keyframes shimmer {
-  0% { transform: translateX(-120%); }
-  100% { transform: translateX(120%); }
-}
-
-.message-label {
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.58);
-  margin-bottom: 8px;
-  position: relative;
-  z-index: 1;
-}
-
-.message {
-  margin: 0;
-  font-size: 20px;
-  line-height: 1.5;
-  color: #fff;
-  position: relative;
-  z-index: 1;
-  min-height: 60px;
-}
-
-.cursor {
-  display: inline-block;
-  margin-left: 2px;
-  animation: blink 0.8s infinite;
-}
-
-@keyframes blink {
-  0%, 49% { opacity: 1; }
-  50%, 100% { opacity: 0; }
-}
-
-.meta-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  margin-bottom: 14px;
-}
-
-.meta-box {
-  padding: 14px 15px;
-  border-radius: 20px;
-  background: rgba(255,255,255,0.07);
-  border: 1px solid rgba(255,255,255,0.08);
-}
-
-.meta-label {
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.58);
-  margin-bottom: 6px;
-}
-
-.meta-value {
-  font-size: 15px;
-  font-weight: 700;
-  line-height: 1.4;
-  word-break: break-word;
-}
-
-.controls {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-top: 8px;
-}
-
-button, a.button-link {
-  width: 100%;
-  border: 0;
-  border-radius: 18px;
-  padding: 15px 16px;
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
-  text-decoration: none;
-  text-align: center;
-  transition: transform 0.18s ease, opacity 0.18s ease, background 0.18s ease;
-}
-
-button:active, a.button-link:active {
-  transform: scale(0.98);
-}
-
-.primary {
-  background: #fff;
-  color: #000;
-}
-
-.secondary {
-  background: rgba(255,255,255,0.12);
-  color: #fff;
-  border: 1px solid rgba(255,255,255,0.08);
-}
-
-.footer {
-  text-align: center;
-  margin-top: 12px;
-  color: rgba(255,255,255,0.6);
-  font-size: 12px;
-  line-height: 1.5;
-}
-
-.hidden {
-  display: none;
-}
-
-@media (max-width: 560px) {
-  .shell {
-    align-items: flex-end;
-    padding: 16px 12px 20px;
-  }
-  .card {
-    padding: 15px;
-    border-radius: 26px;
-  }
-  h1 {
-    font-size: 28px;
-  }
-  .message {
-    font-size: 18px;
-  }
-  .controls, .meta-grid {
-    grid-template-columns: 1fr;
-  }
-  .top-row {
-    align-items: stretch;
-  }
-  .fullscreen-btn {
-    padding: 10px 12px;
-  }
-}
-
+    * { box-sizing: border-box; }
+    :root {
+      --bg-1: #050505;
+      --bg-2: #0d0d0f;
+      --glass: rgba(255,255,255,0.08);
+      --glass-border: rgba(255,255,255,0.12);
+      --text: #ffffff;
+      --muted: rgba(255,255,255,0.76);
+      --shadow: 0 24px 80px rgba(0,0,0,0.45);
+    }
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      font-family: Arial, sans-serif;
+      background: radial-gradient(circle at top, rgba(255,255,255,0.08), transparent 30%), linear-gradient(180deg, var(--bg-1), var(--bg-2));
+      color: var(--text);
+      overflow-x: hidden;
+    }
+    body { position: relative; }
+    .bg-video-wrap {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      z-index: 0;
+      background: #000;
+    }
+    .bg-video-wrap::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(to bottom, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0.42) 45%, rgba(0,0,0,0.82) 100%),
+        radial-gradient(circle at center, transparent 10%, rgba(0,0,0,0.28) 70%, rgba(0,0,0,0.5) 100%);
+      pointer-events: none;
+    }
+    #player {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      background: #000;
+    }
+    .hearts {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 2;
+    }
+    .heart {
+      position: absolute;
+      bottom: -40px;
+      font-size: 18px;
+      opacity: 0;
+      animation: floatHeart linear forwards;
+      filter: drop-shadow(0 6px 16px rgba(255,255,255,0.22));
+    }
+    @keyframes floatHeart {
+      0% { transform: translateY(0) translateX(0) scale(0.85) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.85; }
+      100% { transform: translateY(-115vh) translateX(var(--drift, 0px)) scale(1.25) rotate(20deg); opacity: 0; }
+    }
+    .shell {
+      position: relative;
+      z-index: 3;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 22px 16px 26px;
+    }
+    .card {
+      width: 100%;
+      max-width: 520px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-radius: 30px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+    .top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.12);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 0 0 0 rgba(255,255,255,0.7);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(255,255,255,0.55); }
+      70% { box-shadow: 0 0 0 12px rgba(255,255,255,0); }
+      100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); }
+    }
+    .fullscreen-btn {
+      border: 0;
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.12);
+      padding: 10px 14px;
+      border-radius: 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .headline-wrap { margin-bottom: 12px; }
+    h1 {
+      margin: 0;
+      font-size: 34px;
+      line-height: 1.06;
+      letter-spacing: -0.02em;
+      text-shadow: 0 8px 30px rgba(0,0,0,0.35);
+    }
+    .subtitle {
+      margin: 8px 0 0;
+      color: var(--muted);
+      line-height: 1.5;
+      font-size: 15px;
+      text-shadow: 0 4px 20px rgba(0,0,0,0.28);
+    }
+    .reveal-box {
+      margin: 16px 0 14px;
+      padding: 18px;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.08);
+      position: relative;
+      overflow: hidden;
+    }
+    .reveal-box::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.08) 50%, transparent 100%);
+      transform: translateX(-120%);
+      animation: shimmer 4.6s infinite;
+    }
+    @keyframes shimmer {
+      0% { transform: translateX(-120%); }
+      100% { transform: translateX(120%); }
+    }
+    .message-label {
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.58);
+      margin-bottom: 8px;
+      position: relative;
+      z-index: 1;
+    }
+    .message {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.5;
+      color: #fff;
+      position: relative;
+      z-index: 1;
+      min-height: 60px;
+    }
+    .cursor {
+      display: inline-block;
+      margin-left: 2px;
+      animation: blink 0.8s infinite;
+    }
+    @keyframes blink {
+      0%, 49% { opacity: 1; }
+      50%, 100% { opacity: 0; }
+    }
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .meta-box {
+      padding: 14px 15px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .meta-label {
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.58);
+      margin-bottom: 6px;
+    }
+    .meta-value {
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.4;
+      word-break: break-word;
+    }
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 8px;
+    }
+    button, a.button-link {
+      width: 100%;
+      border: 0;
+      border-radius: 18px;
+      padding: 15px 16px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      text-align: center;
+      transition: transform 0.18s ease, opacity 0.18s ease, background 0.18s ease;
+    }
+    button:active, a.button-link:active { transform: scale(0.98); }
+    .primary { background: #fff; color: #000; }
+    .secondary {
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .footer {
+      text-align: center;
+      margin-top: 12px;
+      color: rgba(255,255,255,0.6);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .hidden { display: none; }
+    @media (max-width: 560px) {
+      .shell { align-items: flex-end; padding: 16px 12px 20px; }
+      .card { padding: 15px; border-radius: 26px; }
+      h1 { font-size: 28px; }
+      .message { font-size: 18px; }
+      .controls, .meta-grid { grid-template-columns: 1fr; }
+      .top-row { align-items: stretch; }
+      .fullscreen-btn { padding: 10px 12px; }
+    }
   </style>
 </head>
 <body>
@@ -361,7 +288,7 @@ button:active, a.button-link:active {
     </div>
     <div class="meta-box">
       <div class="meta-label">From</div>
-      <div class="meta-value" id="sender">someone that admire you the most</div>
+      <div class="meta-value" id="sender">someone who admires you the most</div>
     </div>
   </div>
 
@@ -371,19 +298,18 @@ button:active, a.button-link:active {
     <a class="button-link secondary hidden" id="fallbackLink" href="#" target="_blank" rel="noopener noreferrer">Open Video Directly</a>
   </div>
 
-  <div class="footer">
-    Premium cinematic NFC memory experience.
-  </div>
+  <div class="footer">Premium cinematic NFC memory experience.</div>
 </div>
 
   </div>  <script>
     const params = new URLSearchParams(window.location.search);
-
+    const recordId = params.get('id');
     const rawVideoParam = params.get('video');
     const shortVideoParam = params.get('v');
 
-    let resolvedVideo = 'https://www.w3schools.com/html/mov_bbb.mp4';
+    const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/11Vu5yzzu5XTD2MqVOX3u9yIFdsO-ZEj89qJPKTroUYk/export?format=csv&gid=0';
 
+    let resolvedVideo = 'https://www.w3schools.com/html/mov_bbb.mp4';
     if (shortVideoParam) {
       const cleanedShortVideo = decodeURIComponent(shortVideoParam).trim();
       resolvedVideo = cleanedShortVideo.startsWith('http')
@@ -393,12 +319,12 @@ button:active, a.button-link:active {
       resolvedVideo = decodeURIComponent(rawVideoParam).trim();
     }
 
-    const data = {
+    const defaultData = {
       title: params.get('title') || 'Our Song',
       subtitle: params.get('subtitle') || 'Tap below to hear the music and watch the memory video.',
       recipient: params.get('for') || 'Someone Special',
-      sender: params.get('from') || 'someone that admire you the most',
-      message: params.get('message') || 'From: someone that admire you the most',
+      sender: params.get('from') || 'someone who admires you the most',
+      message: params.get('message') || 'From: someone who admires you the most',
       video: resolvedVideo
     };
 
@@ -415,14 +341,6 @@ button:active, a.button-link:active {
     const fullscreenBtn = document.getElementById('fullscreenBtn');
     const hearts = document.getElementById('hearts');
 
-    titleEl.textContent = data.title;
-    subtitleEl.textContent = data.subtitle;
-    recipientEl.textContent = data.recipient;
-    senderEl.textContent = data.sender;
-    videoSource.src = data.video;
-    fallbackLink.href = data.video;
-    player.load();
-
     function typeMessage(text, speed = 42) {
       messageEl.innerHTML = '';
       let index = 0;
@@ -430,7 +348,6 @@ button:active, a.button-link:active {
       cursor.className = 'cursor';
       cursor.textContent = '|';
       messageEl.appendChild(cursor);
-
       const timer = setInterval(() => {
         if (index < text.length) {
           cursor.insertAdjacentText('beforebegin', text.charAt(index));
@@ -442,7 +359,89 @@ button:active, a.button-link:active {
       }, speed);
     }
 
-    typeMessage(data.message);
+    function parseCsvLine(line) {
+      const result = [];
+      let current = '';
+      let inQuotes = false;
+      for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        const next = line[i + 1];
+        if (char === '"') {
+          if (inQuotes && next === '"') {
+            current += '"';
+            i++;
+          } else {
+            inQuotes = !inQuotes;
+          }
+        } else if (char === ',' && !inQuotes) {
+          result.push(current.trim());
+          current = '';
+        } else {
+          current += char;
+        }
+      }
+      result.push(current.trim());
+      return result;
+    }
+
+    function csvToObjects(csvText) {
+      const lines = csvText.split(/\r?\n/).filter(line => line.trim() !== '');
+      if (!lines.length) return [];
+      const headers = parseCsvLine(lines[0]).map(h => h.trim().toLowerCase());
+      return lines.slice(1).map(line => {
+        const values = parseCsvLine(line);
+        const row = {};
+        headers.forEach((header, index) => {
+          row[header] = values[index] || '';
+        });
+        return row;
+      });
+    }
+
+    function normalizeVideoValue(value) {
+      const cleaned = (value || '').trim();
+      if (!cleaned) return defaultData.video;
+      if (cleaned.startsWith('http')) return cleaned;
+      return `https://files.catbox.moe/${cleaned.replace(/^\/+/, '')}`;
+    }
+
+    function applyData(data) {
+      titleEl.textContent = data.title || 'Our Song';
+      subtitleEl.textContent = data.subtitle || 'Tap below to hear the music and watch the memory video.';
+      recipientEl.textContent = data.recipient || 'Someone Special';
+      senderEl.textContent = data.sender || 'someone who admires you the most';
+      fallbackLink.href = data.video || defaultData.video;
+      videoSource.src = data.video || defaultData.video;
+      player.load();
+      typeMessage(data.message || 'From: someone who admires you the most');
+    }
+
+    async function loadSheetRecord() {
+      if (!recordId || SHEET_CSV_URL.includes('REPLACE_WITH_PUBLISHED_CSV')) {
+        applyData(defaultData);
+        return;
+      }
+      try {
+        const response = await fetch(SHEET_CSV_URL, { cache: 'no-store' });
+        const csvText = await response.text();
+        const rows = csvToObjects(csvText);
+        const match = rows.find(row => (row.id || '').trim() === recordId.trim());
+        if (!match) {
+          applyData(defaultData);
+          return;
+        }
+        applyData({
+          title: match.title || defaultData.title,
+          subtitle: match.subtitle || defaultData.subtitle,
+          recipient: match['for'] || defaultData.recipient,
+          sender: match['from'] || defaultData.sender,
+          message: match.message || defaultData.message,
+          video: normalizeVideoValue(match.video)
+        });
+      } catch (error) {
+        applyData(defaultData);
+      }
+    }
 
     function spawnHeart() {
       const heart = document.createElement('div');
@@ -456,10 +455,11 @@ button:active, a.button-link:active {
       setTimeout(() => heart.remove(), 11000);
     }
 
+    applyData(defaultData);
+    loadSheetRecord();
+
     setInterval(spawnHeart, 1200);
-    for (let i = 0; i < 6; i++) {
-      setTimeout(spawnHeart, i * 350);
-    }
+    for (let i = 0; i < 6; i++) setTimeout(spawnHeart, i * 350);
 
     soundBtn.addEventListener('click', async () => {
       try {
@@ -481,7 +481,7 @@ button:active, a.button-link:active {
       } catch (error) {
         fallbackLink.classList.remove('hidden');
       }
-      typeMessage(data.message);
+      typeMessage(messageEl.textContent || defaultData.message);
     });
 
     fullscreenBtn.addEventListener('click', async () => {
