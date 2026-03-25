@@ -2,150 +2,244 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Memory Player</title>
+  <title>Memory Player Premium</title>
   <style>
     * { box-sizing: border-box; }:root {
-  --bg-1: #09090b;
-  --bg-2: #18181b;
-  --card: rgba(255,255,255,0.10);
-  --card-border: rgba(255,255,255,0.14);
+  --bg-1: #050505;
+  --bg-2: #0d0d0f;
+  --glass: rgba(255,255,255,0.08);
+  --glass-border: rgba(255,255,255,0.12);
   --text: #ffffff;
-  --muted: rgba(255,255,255,0.72);
-  --soft: rgba(255,255,255,0.10);
+  --muted: rgba(255,255,255,0.76);
+  --soft: rgba(255,255,255,0.08);
+  --shadow: 0 24px 80px rgba(0,0,0,0.45);
 }
 
-body {
+html, body {
   margin: 0;
-  min-height: 100vh;
+  min-height: 100%;
   font-family: Arial, sans-serif;
+  background: radial-gradient(circle at top, rgba(255,255,255,0.08), transparent 30%), linear-gradient(180deg, var(--bg-1), var(--bg-2));
   color: var(--text);
-  background:
-    radial-gradient(circle at top, rgba(255,255,255,0.08), transparent 35%),
-    linear-gradient(180deg, var(--bg-1), var(--bg-2) 45%, #000 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
   overflow-x: hidden;
 }
 
-.glow {
+body {
+  position: relative;
+}
+
+.bg-video-wrap {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  z-index: 0;
+  background: #000;
+}
+
+.bg-video-wrap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to bottom, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0.42) 45%, rgba(0,0,0,0.82) 100%),
+    radial-gradient(circle at center, transparent 10%, rgba(0,0,0,0.28) 70%, rgba(0,0,0,0.5) 100%);
+  pointer-events: none;
+}
+
+#player {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  background: #000;
+}
+
+.hearts {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  background:
-    radial-gradient(circle at 20% 20%, rgba(255,255,255,0.08), transparent 25%),
-    radial-gradient(circle at 80% 10%, rgba(255,255,255,0.06), transparent 20%),
-    radial-gradient(circle at 50% 80%, rgba(255,255,255,0.04), transparent 25%);
-  animation: drift 9s ease-in-out infinite alternate;
+  overflow: hidden;
+  z-index: 2;
 }
 
-@keyframes drift {
-  from { transform: translateY(-8px) scale(1); }
-  to { transform: translateY(8px) scale(1.03); }
+.heart {
+  position: absolute;
+  bottom: -40px;
+  font-size: 18px;
+  opacity: 0;
+  animation: floatHeart linear forwards;
+  filter: drop-shadow(0 6px 16px rgba(255,255,255,0.22));
+}
+
+@keyframes floatHeart {
+  0% {
+    transform: translateY(0) translateX(0) scale(0.85) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.85;
+  }
+  100% {
+    transform: translateY(-115vh) translateX(var(--drift, 0px)) scale(1.25) rotate(20deg);
+    opacity: 0;
+  }
 }
 
 .shell {
-  width: 100%;
-  max-width: 460px;
   position: relative;
-  z-index: 1;
+  z-index: 3;
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 22px 16px 26px;
 }
 
 .card {
-  background: var(--card);
-  border: 1px solid var(--card-border);
-  border-radius: 28px;
-  backdrop-filter: blur(20px);
-  box-shadow: 0 25px 80px rgba(0,0,0,0.45);
-  padding: 20px;
+  width: 100%;
+  max-width: 520px;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-radius: 30px;
+  padding: 18px;
+  box-shadow: var(--shadow);
+}
+
+.top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
 }
 
 .pill {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 12px;
-  background: rgba(255,255,255,0.10);
-  border: 1px solid rgba(255,255,255,0.10);
+  padding: 9px 14px;
   border-radius: 999px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.12);
   font-size: 12px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  margin-bottom: 14px;
 }
 
-.cover {
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  border-radius: 22px;
-  overflow: hidden;
-  margin-bottom: 18px;
-  background: #0a0a0a;
-  position: relative;
-  border: 1px solid rgba(255,255,255,0.08);
-}
-
-.cover img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.pulse {
-  position: absolute;
-  right: 14px;
-  top: 14px;
-  width: 14px;
-  height: 14px;
-  border-radius: 999px;
-  background: white;
-  box-shadow: 0 0 0 0 rgba(255,255,255,0.6);
+.live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 0 rgba(255,255,255,0.7);
   animation: pulse 2s infinite;
 }
 
 @keyframes pulse {
   0% { box-shadow: 0 0 0 0 rgba(255,255,255,0.55); }
-  70% { box-shadow: 0 0 0 16px rgba(255,255,255,0); }
+  70% { box-shadow: 0 0 0 12px rgba(255,255,255,0); }
   100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); }
+}
+
+.fullscreen-btn {
+  border: 0;
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.12);
+  padding: 10px 14px;
+  border-radius: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.headline-wrap {
+  margin-bottom: 12px;
 }
 
 h1 {
   margin: 0;
-  font-size: 30px;
-  line-height: 1.08;
+  font-size: 34px;
+  line-height: 1.06;
+  letter-spacing: -0.02em;
+  text-shadow: 0 8px 30px rgba(0,0,0,0.35);
 }
 
 .subtitle {
-  margin: 8px 0 10px;
+  margin: 8px 0 0;
   color: var(--muted);
   line-height: 1.5;
   font-size: 15px;
+  text-shadow: 0 4px 20px rgba(0,0,0,0.28);
+}
+
+.reveal-box {
+  margin: 16px 0 14px;
+  padding: 18px;
+  border-radius: 22px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.08);
+  position: relative;
+  overflow: hidden;
+}
+
+.reveal-box::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.08) 50%, transparent 100%);
+  transform: translateX(-120%);
+  animation: shimmer 4.6s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-120%); }
+  100% { transform: translateX(120%); }
+}
+
+.message-label {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.58);
+  margin-bottom: 8px;
+  position: relative;
+  z-index: 1;
 }
 
 .message {
-  margin: 0 0 18px;
-  color: rgba(255,255,255,0.88);
-  line-height: 1.6;
-  font-size: 14px;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 18px;
-  padding: 14px;
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.5;
+  color: #fff;
+  position: relative;
+  z-index: 1;
+  min-height: 60px;
+}
+
+.cursor {
+  display: inline-block;
+  margin-left: 2px;
+  animation: blink 0.8s infinite;
+}
+
+@keyframes blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
 }
 
 .meta-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, 1fr);
   gap: 12px;
-  margin-bottom: 18px;
+  margin-bottom: 14px;
 }
 
 .meta-box {
-  padding: 14px;
-  border-radius: 18px;
-  background: rgba(255,255,255,0.06);
+  padding: 14px 15px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.07);
   border: 1px solid rgba(255,255,255,0.08);
 }
 
@@ -161,33 +255,27 @@ h1 {
   font-size: 15px;
   font-weight: 700;
   line-height: 1.4;
-}
-
-video {
-  width: 100%;
-  border-radius: 20px;
-  display: block;
-  background: #000;
-  margin-bottom: 14px;
-  border: 1px solid rgba(255,255,255,0.08);
+  word-break: break-word;
 }
 
 .controls {
   display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 12px;
+  margin-top: 8px;
 }
 
 button, a.button-link {
   width: 100%;
   border: 0;
-  border-radius: 16px;
+  border-radius: 18px;
   padding: 15px 16px;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   cursor: pointer;
   text-decoration: none;
   text-align: center;
-  transition: transform 0.18s ease, opacity 0.18s ease;
+  transition: transform 0.18s ease, opacity 0.18s ease, background 0.18s ease;
 }
 
 button:active, a.button-link:active {
@@ -195,20 +283,20 @@ button:active, a.button-link:active {
 }
 
 .primary {
-  background: white;
-  color: black;
+  background: #fff;
+  color: #000;
 }
 
 .secondary {
   background: rgba(255,255,255,0.12);
-  color: white;
+  color: #fff;
   border: 1px solid rgba(255,255,255,0.08);
 }
 
 .footer {
   text-align: center;
-  margin-top: 14px;
-  color: rgba(255,255,255,0.58);
+  margin-top: 12px;
+  color: rgba(255,255,255,0.6);
   font-size: 12px;
   line-height: 1.5;
 }
@@ -217,25 +305,54 @@ button:active, a.button-link:active {
   display: none;
 }
 
-@media (max-width: 480px) {
-  h1 { font-size: 26px; }
-  .meta-grid { grid-template-columns: 1fr; }
-  .card { padding: 16px; border-radius: 24px; }
+@media (max-width: 560px) {
+  .shell {
+    align-items: flex-end;
+    padding: 16px 12px 20px;
+  }
+  .card {
+    padding: 15px;
+    border-radius: 26px;
+  }
+  h1 {
+    font-size: 28px;
+  }
+  .message {
+    font-size: 18px;
+  }
+  .controls, .meta-grid {
+    grid-template-columns: 1fr;
+  }
+  .top-row {
+    align-items: stretch;
+  }
+  .fullscreen-btn {
+    padding: 10px 12px;
+  }
 }
 
   </style>
 </head>
 <body>
-  <div class="glow"></div>  <div class="shell">
+  <div class="bg-video-wrap">
+    <video id="player" autoplay muted playsinline>
+      <source id="videoSource" src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4" />
+      Your browser does not support the video tag.
+    </video>
+  </div>  <div class="hearts" id="hearts"></div>  <div class="shell">
     <div class="card">
-      <div class="pill">NFC Memory Player</div><div class="cover">
-    <img id="coverImage" src="https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=1200&q=80" alt="Cover image" />
-    <div class="pulse"></div>
+      <div class="top-row">
+        <div class="pill"><span class="live-dot"></span> Memory Player</div>
+        <button class="fullscreen-btn" id="fullscreenBtn">Fullscreen</button>
+      </div><div class="headline-wrap">
+    <h1 id="title">Our Song</h1>
+    <p class="subtitle" id="subtitle">Tap below to hear the music and watch the memory video.</p>
   </div>
 
-  <h1 id="title">Our Song</h1>
-  <p class="subtitle" id="subtitle">Tap below to hear the music and watch the memory video.</p>
-  <p class="message" id="message">Every memory deserves a beautiful way to be replayed.</p>
+  <div class="reveal-box">
+    <div class="message-label">Message</div>
+    <p class="message" id="message"></p>
+  </div>
 
   <div class="meta-grid">
     <div class="meta-box">
@@ -244,14 +361,9 @@ button:active, a.button-link:active {
     </div>
     <div class="meta-box">
       <div class="meta-label">From</div>
-      <div class="meta-value" id="sender">With Love</div>
+      <div class="meta-value" id="sender">someone that admire you the most</div>
     </div>
   </div>
-
-  <video id="player" autoplay muted playsinline controls poster="https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=1200&q=80">
-    <source id="videoSource" src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4" />
-    Your browser does not support the video tag.
-  </video>
 
   <div class="controls">
     <button class="primary" id="soundBtn">Tap for Sound</button>
@@ -260,21 +372,34 @@ button:active, a.button-link:active {
   </div>
 
   <div class="footer">
-    This page is driven by URL parameters so you can reuse one player for many customers.
+    Premium cinematic NFC memory experience.
   </div>
 </div>
 
   </div>  <script>
     const params = new URLSearchParams(window.location.search);
 
+    const rawVideoParam = params.get('video');
+    const shortVideoParam = params.get('v');
+
+    let resolvedVideo = 'https://www.w3schools.com/html/mov_bbb.mp4';
+
+    if (shortVideoParam) {
+      const cleanedShortVideo = decodeURIComponent(shortVideoParam).trim();
+      resolvedVideo = cleanedShortVideo.startsWith('http')
+        ? cleanedShortVideo
+        : `https://files.catbox.moe/${cleanedShortVideo.replace(/^\/+/, '')}`;
+    } else if (rawVideoParam) {
+      resolvedVideo = decodeURIComponent(rawVideoParam).trim();
+    }
+
     const data = {
       title: params.get('title') || 'Our Song',
       subtitle: params.get('subtitle') || 'Tap below to hear the music and watch the memory video.',
       recipient: params.get('for') || 'Someone Special',
-      sender: params.get('from') || 'With Love',
-      message: params.get('message') || 'Every memory deserves a beautiful way to be replayed.',
-      cover: params.get('cover') || 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=1200&q=80',
-      video: params.get('video') || 'https://www.w3schools.com/html/mov_bbb.mp4'
+      sender: params.get('from') || 'someone that admire you the most',
+      message: params.get('message') || 'From: someone that admire you the most',
+      video: resolvedVideo
     };
 
     const titleEl = document.getElementById('title');
@@ -282,25 +407,59 @@ button:active, a.button-link:active {
     const recipientEl = document.getElementById('recipient');
     const senderEl = document.getElementById('sender');
     const messageEl = document.getElementById('message');
-    const coverImageEl = document.getElementById('coverImage');
     const player = document.getElementById('player');
     const videoSource = document.getElementById('videoSource');
     const soundBtn = document.getElementById('soundBtn');
     const restartBtn = document.getElementById('restartBtn');
     const fallbackLink = document.getElementById('fallbackLink');
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+    const hearts = document.getElementById('hearts');
 
     titleEl.textContent = data.title;
     subtitleEl.textContent = data.subtitle;
     recipientEl.textContent = data.recipient;
     senderEl.textContent = data.sender;
-    messageEl.textContent = data.message;
-    coverImageEl.src = data.cover;
-    player.poster = data.cover;
     videoSource.src = data.video;
-    player.load();
     fallbackLink.href = data.video;
-
     player.load();
+
+    function typeMessage(text, speed = 42) {
+      messageEl.innerHTML = '';
+      let index = 0;
+      const cursor = document.createElement('span');
+      cursor.className = 'cursor';
+      cursor.textContent = '|';
+      messageEl.appendChild(cursor);
+
+      const timer = setInterval(() => {
+        if (index < text.length) {
+          cursor.insertAdjacentText('beforebegin', text.charAt(index));
+          index += 1;
+        } else {
+          clearInterval(timer);
+          setTimeout(() => cursor.remove(), 1200);
+        }
+      }, speed);
+    }
+
+    typeMessage(data.message);
+
+    function spawnHeart() {
+      const heart = document.createElement('div');
+      heart.className = 'heart';
+      heart.textContent = Math.random() > 0.5 ? '❤' : '♡';
+      heart.style.left = `${Math.random() * 100}%`;
+      heart.style.setProperty('--drift', `${(Math.random() * 80) - 40}px`);
+      heart.style.animationDuration = `${6 + Math.random() * 4}s`;
+      heart.style.fontSize = `${14 + Math.random() * 18}px`;
+      hearts.appendChild(heart);
+      setTimeout(() => heart.remove(), 11000);
+    }
+
+    setInterval(spawnHeart, 1200);
+    for (let i = 0; i < 6; i++) {
+      setTimeout(spawnHeart, i * 350);
+    }
 
     soundBtn.addEventListener('click', async () => {
       try {
@@ -321,6 +480,19 @@ button:active, a.button-link:active {
         await player.play();
       } catch (error) {
         fallbackLink.classList.remove('hidden');
+      }
+      typeMessage(data.message);
+    });
+
+    fullscreenBtn.addEventListener('click', async () => {
+      try {
+        if (player.requestFullscreen) {
+          await player.requestFullscreen();
+        } else if (player.webkitEnterFullscreen) {
+          player.webkitEnterFullscreen();
+        }
+      } catch (error) {
+        console.log('Fullscreen not supported on this device/browser.');
       }
     });
   </script></body>
