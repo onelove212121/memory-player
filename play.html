@@ -1,0 +1,326 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Memory Player</title>
+  <style>
+    * { box-sizing: border-box; }:root {
+  --bg-1: #09090b;
+  --bg-2: #18181b;
+  --card: rgba(255,255,255,0.10);
+  --card-border: rgba(255,255,255,0.14);
+  --text: #ffffff;
+  --muted: rgba(255,255,255,0.72);
+  --soft: rgba(255,255,255,0.10);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at top, rgba(255,255,255,0.08), transparent 35%),
+    linear-gradient(180deg, var(--bg-1), var(--bg-2) 45%, #000 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  overflow-x: hidden;
+}
+
+.glow {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255,255,255,0.08), transparent 25%),
+    radial-gradient(circle at 80% 10%, rgba(255,255,255,0.06), transparent 20%),
+    radial-gradient(circle at 50% 80%, rgba(255,255,255,0.04), transparent 25%);
+  animation: drift 9s ease-in-out infinite alternate;
+}
+
+@keyframes drift {
+  from { transform: translateY(-8px) scale(1); }
+  to { transform: translateY(8px) scale(1.03); }
+}
+
+.shell {
+  width: 100%;
+  max-width: 460px;
+  position: relative;
+  z-index: 1;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 28px;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 25px 80px rgba(0,0,0,0.45);
+  padding: 20px;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 999px;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+
+.cover {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 22px;
+  overflow: hidden;
+  margin-bottom: 18px;
+  background: #0a0a0a;
+  position: relative;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.pulse {
+  position: absolute;
+  right: 14px;
+  top: 14px;
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  background: white;
+  box-shadow: 0 0 0 0 rgba(255,255,255,0.6);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(255,255,255,0.55); }
+  70% { box-shadow: 0 0 0 16px rgba(255,255,255,0); }
+  100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); }
+}
+
+h1 {
+  margin: 0;
+  font-size: 30px;
+  line-height: 1.08;
+}
+
+.subtitle {
+  margin: 8px 0 10px;
+  color: var(--muted);
+  line-height: 1.5;
+  font-size: 15px;
+}
+
+.message {
+  margin: 0 0 18px;
+  color: rgba(255,255,255,0.88);
+  line-height: 1.6;
+  font-size: 14px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 18px;
+  padding: 14px;
+}
+
+.meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.meta-box {
+  padding: 14px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.meta-label {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.58);
+  margin-bottom: 6px;
+}
+
+.meta-value {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+video {
+  width: 100%;
+  border-radius: 20px;
+  display: block;
+  background: #000;
+  margin-bottom: 14px;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.controls {
+  display: grid;
+  gap: 12px;
+}
+
+button, a.button-link {
+  width: 100%;
+  border: 0;
+  border-radius: 16px;
+  padding: 15px 16px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  text-align: center;
+  transition: transform 0.18s ease, opacity 0.18s ease;
+}
+
+button:active, a.button-link:active {
+  transform: scale(0.98);
+}
+
+.primary {
+  background: white;
+  color: black;
+}
+
+.secondary {
+  background: rgba(255,255,255,0.12);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.footer {
+  text-align: center;
+  margin-top: 14px;
+  color: rgba(255,255,255,0.58);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.hidden {
+  display: none;
+}
+
+@media (max-width: 480px) {
+  h1 { font-size: 26px; }
+  .meta-grid { grid-template-columns: 1fr; }
+  .card { padding: 16px; border-radius: 24px; }
+}
+
+  </style>
+</head>
+<body>
+  <div class="glow"></div>  <div class="shell">
+    <div class="card">
+      <div class="pill">NFC Memory Player</div><div class="cover">
+    <img id="coverImage" src="https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=1200&q=80" alt="Cover image" />
+    <div class="pulse"></div>
+  </div>
+
+  <h1 id="title">Our Song</h1>
+  <p class="subtitle" id="subtitle">Tap below to hear the music and watch the memory video.</p>
+  <p class="message" id="message">Every memory deserves a beautiful way to be replayed.</p>
+
+  <div class="meta-grid">
+    <div class="meta-box">
+      <div class="meta-label">For</div>
+      <div class="meta-value" id="recipient">Someone Special</div>
+    </div>
+    <div class="meta-box">
+      <div class="meta-label">From</div>
+      <div class="meta-value" id="sender">With Love</div>
+    </div>
+  </div>
+
+  <video id="player" autoplay muted playsinline controls poster="https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=1200&q=80">
+    <source id="videoSource" src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4" />
+    Your browser does not support the video tag.
+  </video>
+
+  <div class="controls">
+    <button class="primary" id="soundBtn">Tap for Sound</button>
+    <button class="secondary" id="restartBtn">Restart Video</button>
+    <a class="button-link secondary hidden" id="fallbackLink" href="#" target="_blank" rel="noopener noreferrer">Open Video Directly</a>
+  </div>
+
+  <div class="footer">
+    This page is driven by URL parameters so you can reuse one player for many customers.
+  </div>
+</div>
+
+  </div>  <script>
+    const params = new URLSearchParams(window.location.search);
+
+    const data = {
+      title: params.get('title') || 'Our Song',
+      subtitle: params.get('subtitle') || 'Tap below to hear the music and watch the memory video.',
+      recipient: params.get('for') || 'Someone Special',
+      sender: params.get('from') || 'With Love',
+      message: params.get('message') || 'Every memory deserves a beautiful way to be replayed.',
+      cover: params.get('cover') || 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=1200&q=80',
+      video: params.get('video') || 'https://www.w3schools.com/html/mov_bbb.mp4'
+    };
+
+    const titleEl = document.getElementById('title');
+    const subtitleEl = document.getElementById('subtitle');
+    const recipientEl = document.getElementById('recipient');
+    const senderEl = document.getElementById('sender');
+    const messageEl = document.getElementById('message');
+    const coverImageEl = document.getElementById('coverImage');
+    const player = document.getElementById('player');
+    const videoSource = document.getElementById('videoSource');
+    const soundBtn = document.getElementById('soundBtn');
+    const restartBtn = document.getElementById('restartBtn');
+    const fallbackLink = document.getElementById('fallbackLink');
+
+    titleEl.textContent = data.title;
+    subtitleEl.textContent = data.subtitle;
+    recipientEl.textContent = data.recipient;
+    senderEl.textContent = data.sender;
+    messageEl.textContent = data.message;
+    coverImageEl.src = data.cover;
+    player.poster = data.cover;
+    videoSource.src = data.video;
+    fallbackLink.href = data.video;
+
+    player.load();
+
+    soundBtn.addEventListener('click', async () => {
+      try {
+        player.muted = false;
+        player.volume = 1;
+        await player.play();
+        soundBtn.textContent = 'Sound On';
+      } catch (error) {
+        soundBtn.textContent = 'Tap Video Controls';
+        fallbackLink.classList.remove('hidden');
+        alert('This phone blocked autoplay with sound. Tap the video controls or use the direct video button.');
+      }
+    });
+
+    restartBtn.addEventListener('click', async () => {
+      player.currentTime = 0;
+      try {
+        await player.play();
+      } catch (error) {
+        fallbackLink.classList.remove('hidden');
+      }
+    });
+  </script></body>
+</html>
