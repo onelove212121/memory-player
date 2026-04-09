@@ -580,8 +580,15 @@
       introLine2.textContent = currentData.title || 'A memory made just for you';
       introLine3.textContent = `From ${currentData.sender || 'someone who admires you the most'}`;
       fallbackLink.href = currentData.video || defaultData.video;
-      videoSource.src = currentData.video || defaultData.video;
-      player.load();
+      // 🔥 Google Photos support
+if (currentData.video && currentData.video.includes("photos.app")) {
+  setTimeout(() => {
+    window.location.href = currentData.video;
+  }, 1500);
+} else {
+  videoSource.src = currentData.video || defaultData.video;
+  player.load();
+}
       messageEl.textContent = '';
       messageEl.classList.remove('show');
     }
