@@ -581,12 +581,52 @@
       introLine3.textContent = `From ${currentData.sender || 'someone who admires you the most'}`;
       fallbackLink.href = currentData.video || defaultData.video;
       // 🔥 Google Photos support
-if (currentData.video && currentData.video.includes("photos.app")) {
-  setTimeout(() => {
-    window.location.href = currentData.video;
-  }, 1500);
-} else {
-  videoSource.src = currentData.video || defaultData.video;
+function getVideoUrl(url) {
+  if (!url) return "";
+
+  url = decodeURIComponent(url).trim();
+
+  if (url.includes("catbox.moe")) return url;
+  if (url.includes("ik.imagekit.io")) return url;
+
+  if (url.includes("pixeldrain.com")) {
+    const match = url.match(/pixeldrain\.com\/u\/([a-zA-Z0-9]+)/);
+    if (match && match[1]) {
+      return `https://pixeldrain.com/api/file/${match[1]}`;
+    }
+    return url;
+  }
+
+  if (url.includes("drive.google.com")) {
+    let match = url.match(/\/d\/([^\/]+)/);
+    if (match && match[1]) {
+      return `https://drive.google.com/uc?export=download&id=${match[1]}`;
+    }
+  }
+
+  if (
+    url.includes("facebook.com") ||
+    url.includes("fb.watch") ||
+    url.includes("instagram.com") ||
+    url.includes("tiktok.com")
+  ) {
+    window.location.href = url;
+    return "";
+  }
+
+  if (url.includes("photos.app.goo.gl")) {
+    window.location.href = url;
+    return "";
+  }
+
+  return url;
+}
+
+// ✅ NEW VIDEO SETTING
+const finalUrl = getVideoUrl(currentData.video || defaultData.video);
+
+if (finalUrl) {
+  videoSource.src = finalUrl;
   player.load();
 }
       messageEl.textContent = '';
